@@ -14,6 +14,12 @@ insereix(E,[X|Y],[X|Z]) :- insereix(E,Y,Z).
 permuta([],[]).
 permuta([X|Y],Z) :- permuta(Y,L), insereix(X,L,Z).
 
+genArr(0, []).
+genArr(P, [[]|L]) :- P > 0, P1 is P-1, genArr(P1, L).
+
+afegir([],L,L).
+afegir([X|L1],L2,[X|L3]):-afegir(L1,L2,L3).
+
 repeticions(_, [], 0).
 repeticions(X, [Z|Y], C):- 
     Z is X, 
@@ -54,14 +60,7 @@ agafarXConsecutius(N, [1|T], R) :-
 verificarResta([]).
 verificarResta([0|_]).
 
-
-
-
-genArr(0, []).
-genArr(P, [[]|L]) :- P > 0, P1 is P-1, genArr(P1, L).
-
-afegir([],L,L).
-afegir([X|L1],L2,[X|L3]):-afegir(L1,L2,L3).
+%----------------------- TRANSPOSTA -----------------
 
 %% transposta(Matriu, Transposada)
 transposta([], []).
@@ -70,7 +69,7 @@ transposta(Matrix, [Row|Rows]) :-
     transposar_fila(Matrix, Row, RestMatrix),
     transposta(RestMatrix, Rows).
 
-%% transpose_column(Matrix, Column, RestMatrix)
+%% transposar_fila(Matrix, Column, RestMatrix)
 transposar_fila([], [], []).
 transposar_fila([[Elem|RestRow]|Rows], [Elem|Elems], [RestRow|RestRows]) :-
     transposar_fila(Rows, Elems, RestRows).
