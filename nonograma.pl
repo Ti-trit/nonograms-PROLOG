@@ -21,33 +21,33 @@ afegir([],L,L).
 afegir([X|L1],L2,[X|L3]):-afegir(L1,L2,L3).
 
 repeticions(_, [], 0).
-repeticions(X, [Z|Y], C):- 
-    Z is X, 
-    repeticions(X, Y, C1), 
+repeticions(X, [Z|Y], C):-
+    Z is X,
+    repeticions(X, Y, C1),
     C is C1+1.
-repeticions(X, [Z|Y], C):- 
-    Z \= X, 
+repeticions(X, [Z|Y], C):-
+    Z \= X,
     repeticions(X, Y, C).
 
 %----------------------- COMRPOBARFILA -----------------
 comprobarFila([], Fila):- repeticions(1, Fila, C), C is 0.
 comprobarFila([Pista|NextPista], Fila):-
-    comprobarFila_Base(Pista, Fila, Resta), 
+    comprobarFila_Base(Pista, Fila, Resta),
     comprobarFila(NextPista, Resta).
 
-comprobarFila_Base([], Fila, Resta):- skipZeros(Fila, F1), 
-    agafarXConsecutius(0, F1, Resta), 
+comprobarFila_Base([], Fila, Resta):- skipZeros(Fila, F1),
+    agafarXConsecutius(0, F1, Resta),
     verificarResta(Resta).
 
 comprobarFila_Base(X, Fila, Resta) :-
     skipZeros(Fila, F1),
-    agafarXConsecutius(X, F1, Resta), 
+    agafarXConsecutius(X, F1, Resta),
     verificarResta(Resta).
 
 
 skipZeros([], []).
 skipZeros([0|T], R) :- skipZeros(T, R).
-skipZeros([1|T], [1|T]).  
+skipZeros([1|T], [1|T]).
 
 agafarXConsecutius(0, [], []).
 agafarXConsecutius(0, [0|T], [0|T]).
@@ -73,3 +73,11 @@ transposta(Matrix, [Row|Rows]) :-
 transposar_fila([], [], []).
 transposar_fila([[Elem|RestRow]|Rows], [Elem|Elems], [RestRow|RestRows]) :-
     transposar_fila(Rows, Elems, RestRows).
+
+
+nonograma([], [], []).
+nonograma(PistesFila, PistesColumna, Caselles) :- transposta(Caselles, TC), nonograma_intern(PistesFila, Caselles), nonograma_intern(PistesColumna, TC).
+
+nonograma_intern([], []).
+nonograma_intern([P |Pistes], [Fila|Caselles]) :- comprobarFila(P, Fila), nonograma_intern(Pistes, Caselles).
+
