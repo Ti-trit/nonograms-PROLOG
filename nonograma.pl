@@ -76,7 +76,7 @@ transposar_fila([[Elem|RestRow]|Rows], [Elem|Elems], [RestRow|RestRows]) :-
 
 
 nonograma([], [], []).
-nonograma(PistesFila, PistesColumna, Caselles) :- transposta(Caselles, TC), nonograma_intern(PistesFila, Caselles), nonograma_intern(PistesColumna, TC).
+nonograma(PistesFila, PistesColumna, Caselles) :- nonograma_intern(PistesFila, Caselles),transposta(Caselles, TC), nonograma_intern(PistesColumna, TC).
 
 nonograma_intern([], []).
 nonograma_intern([P |Pistes], [Fila|Caselles]) :- comprobarFila(P, Fila), nonograma_intern(Pistes, Caselles).
