@@ -101,7 +101,8 @@ genera_fila(Pistes_fila, N, Fila):- Pistes_fila \=[],
     								Buits_extra >=0,
     								combinacio_espais(N, Buits_extra,Espais),
             						generar_seq_min(Pistes_fila, MinSeq),
-    								juntar_fila_espais(Espais,MinSeq, Fila).
+    								juntar_fila_espais(Espais,MinSeq, Fila),
+    								comprobarFila(Pistes_fila, Fila).
 
 generar_seq_min([], []).
 generar_seq_min([P1|Pistes], Fila):- Pistes\=[], genera_array(P1, 1, Arr), afegir(Arr, [0], Fila1), generar_seq_min(Pistes,Fila2), afegir(Fila1, Fila2, Fila). 
@@ -109,16 +110,26 @@ generar_seq_min([P1], Fila):- genera_array(P1, 1, Fila).
 
 
 
+
+
+% si és un espai (0) en espais, es posa a Fila, i no es consumeix cap element de MinSeq
+%juntar_fila_espais([0|Espais], MinSeq, [0|Fila]) :-
+  %  juntar_fila_espais(Espais, MinSeq, Fila).
+
 %Cae base: llistes buides
 juntar_fila_espais([], [], []).
-
-% Si no és un espai, l'element actual a la Fila
+% si l'element actual d'espais no és un espacil, consumem un element de MinSeq
 juntar_fila_espais([1|Espais], [X|MinSeq], [X|Fila]) :-
     juntar_fila_espais(Espais, MinSeq, Fila).
 
-% si és un espai (0) en espais, es posa a Fila, i no es consumeix cap element de MinSeq
-juntar_fila_espais([0|Espais], MinSeq, [0|Fila]) :-
-    juntar_fila_espais(Espais, MinSeq, Fila).
+% si no hi ha cap element de la seqüència mínima, fiquem espais
+juntar_fila_espais([0|Espais], [], [0|Fila]) :-
+    juntar_fila_espais(Espais, [], Fila).
+
+% si s'ha de posar un espai, l'element actual de Minseq no ha de ser 0, per evitar duplicats
+juntar_fila_espais([0|Espais], [X|MinSeq], [0|Fila]) :-
+    X =\= 0,
+    juntar_fila_espais(Espais, [X|MinSeq], Fila).
 
 
 
