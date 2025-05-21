@@ -110,12 +110,6 @@ generar_seq_min([P1], Fila):- genera_array(P1, 1, Fila).
 
 
 
-
-
-% si és un espai (0) en espais, es posa a Fila, i no es consumeix cap element de MinSeq
-%juntar_fila_espais([0|Espais], MinSeq, [0|Fila]) :-
-  %  juntar_fila_espais(Espais, MinSeq, Fila).
-
 %Cae base: llistes buides
 juntar_fila_espais([], [], []).
 % si l'element actual d'espais no és un espacil, consumem un element de MinSeq
