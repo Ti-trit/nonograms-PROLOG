@@ -11,6 +11,7 @@ element(P, [_|L], X) :-  P > 0,P1 is P-1, element(P1, L, X).
 insereix(E,L,[E|L]).
 insereix(E,[X|Y],[X|Z]) :- insereix(E,Y,Z).
 
+% usar disctinc()a
 permuta([],[]).
 permuta([X|Y],Z) :- permuta(Y,L), insereix(X,L,Z).
 
