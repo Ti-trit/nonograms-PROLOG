@@ -139,4 +139,20 @@ generar_seq_binaria([0|T], K) :-
     K1 is K - 1,
     generar_seq_binaria(T, K1).
 
-    
+%--------------------------------------------------
+soluciona_nonograma([], [], []).
+
+soluciona_nonograma(Pistes_fila,Pistes_columna, Caselles) :-
+    length(Pistes_fila, NumFilas),
+    soluciona_nonograma_aux(Pistes_fila, NumFilas, [], Caselles),
+    transposta(Caselles, TC),
+    nonograma_intern(Pistes_columna, TC).
+
+   
+soluciona_nonograma_aux([], _, Acc, Acc).
+soluciona_nonograma_aux([Pista|RestaPistes], N, Acc, Caselles) :-
+    genera_fila(Pista, N, Fila),
+    append(Acc, [Fila], Acc_actual),
+    soluciona_nonograma_aux(RestaPistes, N, Acc_actual, Caselles).
+
+
