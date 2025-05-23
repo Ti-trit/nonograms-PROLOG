@@ -84,14 +84,16 @@ transposar_fila([[Elem|RestRow]|Rows], [Elem|Elems], [RestRow|RestRows]) :-
 
 
 nonograma([], [], []).
+%Comprovar solució
 nonograma(PistesFila, PistesColumna, Caselles) :- nonvar(Caselles),nonograma_intern(PistesFila, Caselles),transposta(Caselles, TC), nonograma_intern(PistesColumna, TC).
 
 
-%generacio de solucio
+%generar solució
 nonograma(Pistes_fila,Pistes_columna, Caselles) :-
     var(Caselles),
-    length(Pistes_fila, NumFilas),
-    soluciona_nonograma_aux(Pistes_fila, NumFilas, [], Caselles),
+   % length(Pistes_fila, NumFilas),
+        length(Pistes_columna, NumColumnas),
+    soluciona_nonograma_aux(Pistes_fila, NumColumnas, [], Caselles),
     transposta(Caselles, TC),
     nonograma_intern(Pistes_columna, TC).
 
