@@ -119,7 +119,7 @@ genera_fila(Pistes_fila, N, Fila):- Pistes_fila \=[],
     								Min_cells is Sum+Length-1, 
     								Buits_extra is N-Min_cells,
     								Buits_extra >=0,
-    								combinacio_espais(N, Buits_extra,Espais),
+    								genera_seq_aleatoria(N, Buits_extra,Espais),
             						generar_seq_min(Pistes_fila, MinSeq),
     								juntar_fila_espais(Espais,MinSeq, Fila),
     								comprobarFila(Pistes_fila, Fila).
@@ -127,7 +127,6 @@ genera_fila(Pistes_fila, N, Fila):- Pistes_fila \=[],
 generar_seq_min([], []).
 generar_seq_min([P1|Pistes], Fila):- Pistes\=[], genera_array(P1, 1, Arr), afegir(Arr, [0], Fila1), generar_seq_min(Pistes,Fila2), afegir(Fila1, Fila2, Fila). 
 generar_seq_min([P1], Fila):- genera_array(P1, 1, Fila).
-
 
 
 %Cae base: llistes buides
@@ -147,7 +146,7 @@ juntar_fila_espais([0|Espais], [X|MinSeq], [0|Fila]) :-
 
 
 
-combinacio_espais(N, K, Seq) :-
+genera_seq_aleatoria(N, K, Seq) :-
     length(Seq, N),
     generar_seq_binaria(Seq, K).
 
@@ -158,6 +157,52 @@ generar_seq_binaria([0|T], K) :-
     K > 0,
     K1 is K - 1,
     generar_seq_binaria(T, K1).
+
+%---------------GENERA NONOGRAMA (OPCIONAL)---------------------
+
+genera_nonograma(0, 0, [], [], []).
+genera_nonograma(Num_Cols, Num_Files, C, F, Caselles):- genera_caselles(Num_Files,Num_Cols, Caselles), 
+    genera_Pistes(Num_Files, Caselles, C),
+    transposta(Caselles, Transpota_Caselles), 
+    genera_Pistes(Num_Cols, Transpota_Caselles, F).
+
+genera_caselles(0, _, []). 
+genera_caselles(Num_Files, Num_Cols, [Fila|Resta]):- Num_Files > 0,
+    %valor random de 0
+    Limit_Superior is Num_Cols +1, 
+    Num_zeros is random(Limit_Superior),
+    genera_seq_aleatoria(Num_Cols, Num_zeros, Fila), 
+    Num_Files1 is Num_Files -1, 
+    genera_caselles(Num_Files1, Num_Cols, Resta).
+
+genera_Pistes(0, [], []).
+genera_Pistes(Num_Files, [Fila_Actual|Caselles], [Pistes_Fila_Actual|Resta]):- 
+    Num_Files > 0, 
+    genera_pistes_fila(Fila_Actual, Pistes_Fila_Actual), 
+    Num_Files1 is Num_Files -1, 
+    genera_Pistes(Num_Files1, Caselles, Resta).
+
+%llista buida--> cap pista
+genera_pistes_fila([], []).
+genera_pistes_fila(Fila_Actual, Pistes_Fila_Actual):- genera_pistes_fila_auxiliar(Fila_Actual, 0, Pistes_Fila_Actual).
+
+genera_pistes_fila_auxiliar([], 0, []).
+genera_pistes_fila_auxiliar([], Contador, [Contador]) :-
+    Contador > 0. 
+genera_pistes_fila_auxiliar([1|Y], Contador, Pistes):-  Contador1 is Contador +1,
+    genera_pistes_fila_auxiliar(Y, Contador1, Pistes).
+
+
+genera_pistes_fila_auxiliar([0|Y], Contador, [Contador|Pistes]):- Contador>0,
+    genera_pistes_fila_auxiliar(Y, 0, Pistes).
+
+
+genera_pistes_fila_auxiliar([0|Y], 0, Pistes):-
+    genera_pistes_fila_auxiliar(Y, 0, Pistes).
+
+
+
+
 
 
 
