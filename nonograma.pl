@@ -151,10 +151,8 @@ genera_nonograma(Num_Cols, Num_Files, C, F, Caselles):- genera_caselles(Num_File
 
 genera_caselles(0, _, []). 
 genera_caselles(Num_Files, Num_Cols, [Fila|Resta]):- Num_Files > 0,
-    %valor random de 0
-    Limit_Superior is Num_Cols +1, 
-    Num_zeros is random(Limit_Superior),
-    genera_seq_aleatoria(Num_Cols, Num_zeros, Fila), 
+
+    genera_binari(Num_Cols, Fila),
     Num_Files1 is Num_Files -1, 
     genera_caselles(Num_Files1, Num_Cols, Resta).
 
@@ -182,6 +180,19 @@ genera_pistes_fila_auxiliar([0|Y], Contador, [Contador|Pistes]):- Contador>0,
 
 genera_pistes_fila_auxiliar([0|Y], 0, Pistes):-
     genera_pistes_fila_auxiliar(Y, 0, Pistes).
+
+
+genera_binari(0, []).
+
+genera_binari(N, [Bit|Resto]) :-
+    N > 0,
+    random_between(0, 1, Bit),
+    N1 is N - 1,
+    genera_binari(N1, Resto).
+
+
+
+
 
 
 

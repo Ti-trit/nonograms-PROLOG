@@ -20,6 +20,7 @@ function getParam(string $name, $default = null) {
     return $_POST[$name];
 }
 
+
 $action   = getParam('action', '');
 $rows     = (int) getParam('rows', 5);
 $cols     = (int) getParam('cols', 5);
@@ -28,13 +29,23 @@ $pistasC  = getParam('pistasC', '[[], [], [], [], []]');
 $casillas = getParam('casillas', '[[0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]]');
 $result   = null;
 
+function getLength($casillas){
+    $casillasArray = json_decode($casillas, true); // convertir JSON a array PHP
+    return count($casillasArray);
+}
+
 // Ejecutar acción según botón pulsado
 $query = "";
 switch ($action) {
     case 'check':
+        //actualitza
+        $rows = getLength($pistasF);  
+        $cols = getLength($pistasC); 
         $query  = sprintf("nonograma(%s,%s,%s).", $pistasF, $pistasC, $casillas);
         break;
     case 'solve':
+        $rows = getLength($pistasF);  
+        $cols = getLength($pistasC);  
         $query  = sprintf("nonograma(%s,%s,Caselles), print(Caselles).", $pistasF, $pistasC);
 
         break;
@@ -61,6 +72,8 @@ switch($action){
             $array = json_decode($result_json[0], true);
             echo '<script>console.log(' .  json_encode($array) . ');</script>';
             $casillas = json_encode($array);
+          
+            
         }else{
             echo '<script>console.log("lol: ");</script>';
         }
