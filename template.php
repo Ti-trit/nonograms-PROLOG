@@ -58,7 +58,6 @@
         }
         rowsInput.value = rows;
         colsInput.value = cols;
-        console.log(state)
     }
 
     function draw() {

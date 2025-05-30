@@ -39,7 +39,7 @@ switch ($action) {
 
         break;
     case 'gen':
-        $query  = sprintf("bagof((PF, PC, C),genera_nonograma(%d, %d, PF, PC, C), R), write(R).", $rows, $cols);
+        $query  = sprintf('genera_nonograma(%d, %d, PF, PC, C), write("["),write(PF),write(","),write(PC),write(","),write(C), write("]").', $cols, $rows);
         break;
 }
 $result = run_swipl($query);
@@ -68,9 +68,10 @@ switch($action){
     case 'gen':
         echo '<script>console.log(' .  json_encode($result_json[0]) . ');</script>';
         $array = json_decode($result_json[0], true);
-        $pistasF = json_encode($array[0][0]);
-        $pistasC = json_encode($array[0][1]);
-        $casillas = json_encode($array[0][2]);
+        echo '<script>console.log(' .  json_encode($array[0]) . ');</script>';
+        $pistasF = json_encode($array[0]);
+        $pistasC = json_encode($array[1]);
+        $casillas = json_encode($array[2]);
         break;
 }
 // Decodificar JSON si aplica
