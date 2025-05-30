@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Nonograma MVC</title>
+    <title>Nonograma</title>
     <style>
         body { display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
         form { display: flex; flex-direction: column; align-items: center; }
-        input[type="number"] { width: 4ch; }
+        input[type="number"] { width: 8ch; }
         .buttons { margin-bottom: 10px; }
         .grid { display: grid; grid-gap: 1px; background: #333; margin: 20px 0; border: 2px solid #333; }
         .cell { width: 30px; height: 30px; background: #fff; cursor: pointer; }
@@ -17,8 +17,8 @@
 <body>
 <form method="post" id="form">
     <div>
-        <label>Filas: <input type="number" name="rows" value="<?= $rows ?>"></label>
-        <label>Columnas: <input type="number" name="cols" value="<?= $cols ?>"></label>
+        <label>Files: <input type="number" name="rows" value="<?= $rows ?>"></label>
+        <label>Columnes: <input type="number" name="cols" value="<?= $cols ?>"></label>
     </div>
     <div class="buttons">
         <button type="submit" name="action" value="check">Comprobar</button>
@@ -56,6 +56,9 @@
         if (!Array.isArray(state) || state.length !== rows || state.some(r => !Array.isArray(r) || r.length !== cols)) {
             state = Array.from({ length: rows }, () => Array(cols).fill(0));
         }
+        rowsInput.value = rows;
+        colsInput.value = cols;
+        console.log(state)
     }
 
     function draw() {
