@@ -8,7 +8,7 @@
 </head>
 
 <header>
-    <a href="https://github.com/Ti-trit/PROLOG" target="_blank"><img src="assets/icon/github.svg" width="45" height="45"></img></a>
+    <a href="https://github.com/Ti-trit/nonograms-PROLOG" target="_blank"><img src="assets/icon/github.svg" width="45" height="45"></img></a>
 </header>
 <h1>Nonograma</h1>
 <div class="container">
