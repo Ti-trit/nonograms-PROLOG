@@ -190,13 +190,53 @@ verificarResta([0|_]).
 
 
 %% transposta(Matriu, Transposada)
+%----------------------- TRANSPOSTA -----------------
+%-----------------'transposta'-----------------------------
+% Descripció:
+%   Instancia una llista de longitud fixa prèviament amb exactament K ceros 
+%   i la resta d’elements com un 1. 
+%
+% Arguments:
+%   - Matriu: la matriu NxM a transposar
+%   - Transposta: la matriu MxN transposta de Matriu
+%
+% Cas base:
+%   - Si Matriu = Transposta = []
+%
+% Cas recursiu:
+%   1. Genera la transposta de una columna de la matriu original
+%   2. Opera recursivament amb la resta de columnes
+%--------------------------------------------------------------------------
 transposta([], []).
 transposta([[]|_], []).
 transposta(Matrix, [Row|Rows]) :-
     transposar_fila(Matrix, Row, RestMatrix),
     transposta(RestMatrix, Rows).
 
-%% transposar_fila(Matrix, Column, RestMatrix)
+%-----------------'transposar_fila'-----------------------------
+% Descripció:
+%   Agafa un element y el restant d'una fila del conjunt de files, després agafa l'element i
+%   l'inserta a la fila transposada, finalment guarda el restant de les files apart i fa recursió a la següent
+%
+% Arguments:
+%   - Matriu: la matriu NxM a transposar una columna
+%   - Elems: la nova fila de la matriu transposada
+%   - RestRows: la resta de columnes de la matriu original
+%
+% Cas base:
+%   - Si Matriu = Elems = RestRows = []
+%
+% exemple:
+%    Matrix,   Elems,   RestRows
+%    [a, b, c]  ?           ?     
+%    [c, d, e]  ?           ?
+%    Matrix,   Elems,   RestRows
+%       []       [a]      [b, c]     
+%    [c, d, e]              ?
+%    Matrix,   Elems,   RestRows
+%      []        [a, c]   [b, c]     
+%      []                 [d, e]
+%--------------------------------------------------------------------------
 transposar_fila([], [], []).
 transposar_fila([[Elem|RestRow]|Rows], [Elem|Elems], [RestRow|RestRows]) :-
     transposar_fila(Rows, Elems, RestRows).
