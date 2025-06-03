@@ -49,7 +49,7 @@ afegir([X|L1],L2,[X|L3]):-afegir(L1,L2,L3).
 %----------------------------------------------------------------------------------------
 repeticions(_, [], 0).
 repeticions(X, [Z|Y], C):-
-    Z is X,
+    Z is X, !,
     repeticions(X, Y, C1),
     C is C1+1.
 repeticions(X, [Z|Y], C):-
@@ -72,7 +72,7 @@ repeticions(X, [Z|Y], C):-
 %----------------------------------------------------------------------------------------
 
 genera_array(0, _,[]).
-genera_array(Tamany,Valor, [Valor|L]):- Tamany > 0, Tamany1 is Tamany-1, genera_array(Tamany1, Valor, L).
+genera_array(Tamany,Valor, [Valor|L]):- Tamany > 0, !, Tamany1 is Tamany-1, genera_array(Tamany1, Valor, L).
 
 %-----------------'suma_list'------------------------------------------------------------
 % Descripció: Calcula la suma dels elements d'una llista, i el retorna.
@@ -172,7 +172,7 @@ salta_zeros([1|T], [1|T]).
 agafarXConsecutius(0, [], []).
 agafarXConsecutius(0, [0|T], [0|T]).
 agafarXConsecutius(N, [1|T], R) :-
-    N > 0,
+    N > 0, !,
     N1 is N - 1,
     agafarXConsecutius(N1, T, R).
 
@@ -244,12 +244,12 @@ transposar_fila([[Elem|RestRow]|Rows], [Elem|Elems], [RestRow|RestRows]) :-
 
 nonograma([], [], []).
 %Comprovar solució
-nonograma(PistesFila, PistesColumna, Caselles) :- nonvar(Caselles),nonograma_intern(PistesFila, Caselles),transposta(Caselles, TC), nonograma_intern(PistesColumna, TC).
+nonograma(PistesFila, PistesColumna, Caselles) :- nonvar(Caselles),!, nonograma_intern(PistesFila, Caselles),transposta(Caselles, TC), nonograma_intern(PistesColumna, TC).
 
 
 %generar solució
 nonograma(Pistes_fila,Pistes_columna, Caselles) :-
-    var(Caselles),
+    var(Caselles), !, 
    % length(Pistes_fila, NumFilas),
         length(Pistes_columna, NumColumnas),
     soluciona_nonograma_aux(Pistes_fila, NumColumnas, [], Caselles),
@@ -297,7 +297,7 @@ genera_fila(Pistes_fila, N, Fila):- Pistes_fila \=[],
     								length(Pistes_fila, Length), 
     								Min_cells is Sum+Length-1, 
     								Buits_extra is N-Min_cells,
-    								Buits_extra >=0,
+    								Buits_extra >=0, !,
     								genera_seq_aleatoria(N, Buits_extra,Espais),
             						generar_seq_min(Pistes_fila, MinSeq),
     								juntar_fila_espais(Espais,MinSeq, Fila),
@@ -323,7 +323,7 @@ genera_fila(Pistes_fila, N, Fila):- Pistes_fila \=[],
 %----------------------------------------------------------------------------------------
 generar_seq_min([], []).
 generar_seq_min([P1], Fila):- genera_array(P1, 1, Fila).
-generar_seq_min([P1|Pistes], Fila):- Pistes\=[], genera_array(P1, 1, Arr), afegir(Arr, [0], Fila1), generar_seq_min(Pistes,Fila2), afegir(Fila1, Fila2, Fila). 
+generar_seq_min([P1|Pistes], Fila):- Pistes\=[], !, genera_array(P1, 1, Arr), afegir(Arr, [0], Fila1), generar_seq_min(Pistes,Fila2), afegir(Fila1, Fila2, Fila). 
 
 
 %-----------------'juntar_fila_espais'---------------------------------------------------
@@ -401,7 +401,7 @@ generar_seq_binaria_k_zeros([], 0).
 generar_seq_binaria_k_zeros([1|T], K) :-
     generar_seq_binaria_k_zeros(T, K).
 generar_seq_binaria_k_zeros([0|T], K) :-
-    K > 0,
+    K > 0, !,
     K1 is K - 1,
     generar_seq_binaria_k_zeros(T, K1).
 
@@ -474,7 +474,7 @@ genera_caselles(Num_Files, Num_Cols, [Fila|Resta]):- Num_Files > 0,
 %----------------------------------------------------------------------------------------
 genera_Pistes(0, [], []).
 genera_Pistes(Num_Files, [Fila_Actual|Caselles], [Pistes_Fila_Actual|Resta]):- 
-    Num_Files > 0, 
+    Num_Files > 0, !, 
     genera_pistes_fila(Fila_Actual, Pistes_Fila_Actual), 
     Num_Files1 is Num_Files -1, 
     genera_Pistes(Num_Files1, Caselles, Resta).
@@ -550,7 +550,7 @@ genera_pistes_fila_auxiliar([0|Y], 0, Pistes):-
 genera_binari(0, []).
 
 genera_binari(N, [Bit|Resta]) :-
-    N > 0,
+    N > 0, !,
     random_between(0, 1, Bit),
     N1 is N - 1,
     genera_binari(N1, Resta).
