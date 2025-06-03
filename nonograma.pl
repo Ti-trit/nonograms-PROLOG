@@ -189,12 +189,9 @@ verificarResta([0|_]).
 
 
 
-%% transposta(Matriu, Transposada)
-%----------------------- TRANSPOSTA -----------------
-%-----------------'transposta'-----------------------------
+%-----------------'transposta'-------------------------------------
 % Descripció:
-%   Instancia una llista de longitud fixa prèviament amb exactament K ceros 
-%   i la resta d’elements com un 1. 
+%  Calcula la transposta d'una matriu
 %
 % Arguments:
 %   - Matriu: la matriu NxM a transposar
@@ -206,16 +203,16 @@ verificarResta([0|_]).
 % Cas recursiu:
 %   1. Genera la transposta de una columna de la matriu original
 %   2. Opera recursivament amb la resta de columnes
-%--------------------------------------------------------------------------
+%------------------------------------------------------------------
 transposta([], []).
 transposta([[]|_], []).
 transposta(Matrix, [Row|Rows]) :-
     transposar_fila(Matrix, Row, RestMatrix),
     transposta(RestMatrix, Rows).
 
-%-----------------'transposar_fila'-----------------------------
+%-----------------'transposar_fila'------------------------------------------------------
 % Descripció:
-%   Agafa un element y el restant d'una fila del conjunt de files, després agafa l'element i
+%   Agafa un element i el restant d'una fila del conjunt de files, després agafa l'element i
 %   l'inserta a la fila transposada, finalment guarda el restant de les files apart i fa recursió a la següent
 %
 % Arguments:
@@ -236,12 +233,37 @@ transposta(Matrix, [Row|Rows]) :-
 %    Matrix,   Elems,   RestRows
 %      []        [a, c]   [b, c]     
 %      []                 [d, e]
-%--------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
 transposar_fila([], [], []).
 transposar_fila([[Elem|RestRow]|Rows], [Elem|Elems], [RestRow|RestRows]) :-
     transposar_fila(Rows, Elems, RestRows).
 
-
+%-----------------'nonograma'------------------------------------------------------------
+% Descripció:
+%   Comprova o soluciona un nonograma segons l’estat de la variable Caselles.
+%   Si Caselles ja està instanciada, es comprova que compleixi les pistes de 
+%   files i columnes. Si Caselles és variable, es genera una solució que s’ajusti
+%   a les pistes indicades.
+%
+% Arguments:
+%   - PistesFila: llista de llistes amb les llistes de files
+%   - PistesColumna: llista de llistes amb les pistes de columnes
+%   - Caselles: matriu (llista de llistes de 0s i 1s) que representa un nonograma.
+%
+% Cas base:
+%   - nonograma([], [], []): no hi ha ni pistes ni caselles.
+%
+% Cas 1 (comprovar solució):
+%   - Si Caselles està instanciada (nonvar(Caselles)), es comprova cada fila amb
+%     nonograma_intern i després es calcula la transposta de Caselles per comprovar
+%     les pistes de columna.
+%
+% Cas 2 (generar solució):
+%   - Si Caselles és variable (var(Caselles)), es construeix cada fila a partir de
+%     les pistes de fila cridant soluciona_nonograma_aux. Un cop generades totes
+%     les files, s’obté la matriu de caselles i es comproven les pistes de columna
+%     sobre la matriu transposada.
+%----------------------------------------------------------------------------------------
 nonograma([], [], []).
 %Comprovar solució
 nonograma(PistesFila, PistesColumna, Caselles) :- nonvar(Caselles),nonograma_intern(PistesFila, Caselles),transposta(Caselles, TC), nonograma_intern(PistesColumna, TC).
@@ -256,13 +278,51 @@ nonograma(Pistes_fila,Pistes_columna, Caselles) :-
     transposta(Caselles, TC),
     nonograma_intern(Pistes_columna, TC).
 
-   
+
+%-----------------'soluciona_nonograma_aux'----------------------------------------------
+% Descripció:
+%   Construeix recursivament la matriu de caselles a partir de les pistes de fila.
+%   Cada fila es genera amb genera_fila, assegurant que s’ajusti a la pista corresponent.
+%
+% Arguments:
+%   - [Pista|RestaPistes]: llista de pistes de fila 
+%   - N: nombre de columnes (longitud de cada fila).
+%   - Acc: acumulador amb les files ja generades.
+%   - Caselles: resultat final; matriu completa un cop processades totes les pistes.
+%
+% Cas base:
+%   - Si no queden pistes de fila per processar (PistesF = []), llavors Acc ja conté
+%     totes les files i es retorna com a Caselles.
+%
+% Cas recursiu:
+%   1. Pren la primera pista de fila (Pista) i genera una fila de longitud N que
+%      s’ajusti a Pista cridant genera_fila.
+%   2. Afegeix la fila generada a l’acumulador (Acc) amb append.
+%   3. Crida recursivament amb la resta de pistes de fila i l’acumulador actualitzat.
+%----------------------------------------------------------------------------------------
 soluciona_nonograma_aux([], _, Acc, Acc).
 soluciona_nonograma_aux([Pista|RestaPistes], N, Acc, Caselles) :-
     genera_fila(Pista, N, Fila),
     append(Acc, [Fila], Acc_actual),
     soluciona_nonograma_aux(RestaPistes, N, Acc_actual, Caselles).
 
+%-----------------'nonograma_intern'-----------------------------------------------------
+% Descripció:
+%   Comprova que cada fila (o columna) d’una matriu s’ajusti a la seva llista de pistes.
+
+%
+% Arguments:
+%   - [P |Pistes]: llista de llistes de pistes
+%   - [Fila|Caselles]: el nonograma a comprovar
+%
+% Cas base:
+%   - Si no queden elements per verificar (ambdues llistes buides), retorna true.
+%
+% Cas recursiu:
+%   1. Pren la primera pista (P) i la primera fila/columna binària (Fila).
+%   2. Comprova que Fila s’ajusti a P mitjançant comprobarFila
+%   3. Continua amb la resta de pistes i files recursivament.
+%----------------------------------------------------------------------------------------
 nonograma_intern([], []).
 nonograma_intern([P |Pistes], [Fila|Caselles]) :- comprobarFila(P, Fila), nonograma_intern(Pistes, Caselles).
 
