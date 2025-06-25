@@ -5,13 +5,14 @@
 % Assignatura: 21721 - Llenguatges de Programació. 
 % Grup: PF1-13
 % Professors: Antoni Oliver Tomàs, Francesc Xavier Gayà Morey
-% Convocatòria Ordinària
+% Convocatòria Extraordinària
 %Extres implementades:
 %       - Resolució de nonograms no quadrats
 %       - Resolució de nonograms de mida grossa
 %       - Genereció de nonograms 
 %       - S'ha afegit la part del frontend del joc utilitzant PHP i HTML,
 %           encarregant-se de la representació visual del joc
+%CANVIS FETS:...............
 %>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 %----------------------- FUNCIONS AUXILIARS -----------------
@@ -358,10 +359,45 @@ genera_fila(Pistes_fila, N, Fila):- Pistes_fila \=[],
     								Min_cells is Sum+Length-1, 
     								Buits_extra is N-Min_cells,
     								Buits_extra >=0, !,
-    								genera_seq_aleatoria(N, Buits_extra,Espais),
-            						generar_seq_min(Pistes_fila, MinSeq),
-    								juntar_fila_espais(Espais,MinSeq, Fila),
-    								comprobarFila(Pistes_fila, Fila).
+						 			GapsLen is Length + 1,
+    								repartir(Buits_extra, GapsLen, Gaps),    								
+    								juntar_fila_espais(Gaps,Pistes_fila, Fila).
+
+repartir(0, N, L) :- !, genera_array(N, 0, L).
+%només queda un buit
+repartir(Total, 1, [Total]):-!.
+repartir(Total, N, [X|Xs]) :-
+    N > 1,
+    Max is Total,
+    between(0, Max, X),
+    Rest is Total - X,
+    N1 is N - 1,
+    repartir(Rest, N1, Xs).
+
+
+juntar_fila_espais(Gaps, Pistes, Fila) :-
+    juntar_acc(Gaps, Pistes, [], Fila).
+
+% caso base: ya no quedan bloques, solo el hueco final
+juntar_acc([G], [], Acc, Fila) :-
+    genera_array(G, 0, Zs),
+    afegir(Acc, Zs, Fila).
+
+% caso recursivo: pongo hueco extra, bloque de unos, 0 separador si vienen más bloques
+juntar_acc([Buit|Buits], [Pista|Pistes_fila], Acumulador, Fila) :-
+    genera_array(Buit, 0, Zeros),
+    afegir(Acumulador, Zeros, Acc1),
+    genera_array(Pista, 1, Uns),
+    afegir(Acc1, Uns, Acc2),
+    afegir_zero(Pistes_fila, Acc2, Acc3),
+    juntar_acc(Buits, Pistes_fila, Acc3, Fila).
+
+juntar_acc([], [], Fila, Fila).
+
+afegir_zero([], Acumulador, Acumulador).
+afegir_zero([_|_], Acumulador, Acc) :-
+    afegir(Acumulador, [0], Acc).
+
 
 %-----------------'generar_seq_min'------------------------------------------------------
 % Descripció:
@@ -408,19 +444,19 @@ generar_seq_min([P1|Pistes], Fila):- Pistes\=[], !, genera_array(P1, 1, Arr), af
 %        - Només s'insereix un espai (0) si el següent valor de `MinSeq` no és ja un 0,
 %          per evitar espais duplicats entre blocs.
 %----------------------------------------------------------------------------------------
-juntar_fila_espais([], [], []).
+%juntar_fila_espais([], [], []).
 % si l'element actual d'espais no és un espacil, consumem un element de MinSeq
-juntar_fila_espais([1|Espais], [X|MinSeq], [X|Fila]) :-
-    juntar_fila_espais(Espais, MinSeq, Fila).
+%juntar_fila_espais([1|Espais], [X|MinSeq], [X|Fila]) :-
+   % juntar_fila_espais(Espais, MinSeq, Fila).
 
 % si no hi ha cap element de la seqüència mínima, fiquem espais
-juntar_fila_espais([0|Espais], [], [0|Fila]) :-
-    juntar_fila_espais(Espais, [], Fila).
+%juntar_fila_espais([0|Espais], [], [0|Fila]) :-
+  %  juntar_fila_espais(Espais, [], Fila).
 
 % si s'ha de posar un espai, l'element actual de Minseq no ha de ser 0, per evitar duplicats
-juntar_fila_espais([0|Espais], [X|MinSeq], [0|Fila]) :-
-    X =\= 0,
-    juntar_fila_espais(Espais, [X|MinSeq], Fila).
+%juntar_fila_espais([0|Espais], [X|MinSeq], [0|Fila]) :-
+   % X =\= 0,
+  %  juntar_fila_espais(Espais, [X|MinSeq], Fila).
 
 
 %-----------------'genera_seq_aleatoria'----------------------------------
