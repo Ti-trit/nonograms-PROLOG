@@ -12,7 +12,10 @@
 %       - Genereció de nonograms 
 %       - S'ha afegit la part del frontend del joc utilitzant PHP i HTML,
 %           encarregant-se de la representació visual del joc
-%CANVIS FETS:...............
+% CANVIS FETS: Ara la generació de la fila es basa en repartir de manera explícita
+% els buits extra disponibles abans, entre i després dels blocs, en comptes de fer-ho
+% amb una distribució aleatòria no estructurada.
+% MÈTODES MODIFICATS : genera_fila, repartir, juntar_fila_espais, afegir_zero
 %>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 %----------------------- FUNCIONS AUXILIARS -----------------
@@ -331,27 +334,26 @@ nonograma_intern([P |Pistes], [Fila|Caselles]) :- comprobarFila(P, Fila), nonogr
 
 %-----------------'genera_fila'----------------------------------------------------------
 % Descripció:
-%   Genera una fila vàlida d’un nonograma, donades les pistes 
-%   de fila i la mida total de la fila (N).
+%   Genera una fila vàlida d'un nonograma donades les pistes de la fila i la mida total.
+%   Utilitza la funció 'repartir' per distribuir els espais buits extra i 
+%   'juntar_fila_espais' per construir la fila final amb aquests buits i les pistes.
 %
 % Arguments:
 %   - Pistes_fila: llista de nombres que representen la longitud de grups consecutius
 %                  de caselles plenes (1s).
 %   - N: longitud total de la fila 
 %   - Fila: la fila generada
-%
 % Cas base:
-%   - Si no hi ha cap pista, la fila generada és tota de zeros.
-%
+%   genera_fila([], N, Fila):
+%   - Si no hi ha cap pista, la fila generada és tota de zeros.%
 % Cas general:
-%   1. Es calcula el nombre mínim de caselles necessàries per complir les pistes:
+%  1. Es calcula el nombre mínim de caselles necessàries per complir les pistes:
 %      la suma de les pistes més els espais mínims entre blocs (Length - 1).
 %   2. Es calcula quants buits extra hi ha (caselles de més que es poden repartir).
-%   3. Es genera una distribució aleatòria d'aquests buits.
-%   4. Es genera la seqüència mínima de blocs (amb 1s i buits mínims).
-%   5. Es junten els espais addicionals amb la seqüència mínima per formar la fila completa.
-%   6. Es comprova que la fila final compleix realment les pistes.
-%----------------------------------------------------------------------------------------
+%   3. Es reparteixen aquests buits en Length+1 parts (abans, entre i després dels blocs)
+%      amb el predicat 'repartir'.
+%   4. Es construeix la fila completa amb els espais i blocs, amb 'juntar_fila_espais'.
+%---------------------------------------------------------------------------------------
 genera_fila([], N, Fila):- genera_array(N, 0, Fila).
 genera_fila(Pistes_fila, N, Fila):- Pistes_fila \=[],
     								suma_list(Pistes_fila, Sum),
@@ -363,6 +365,28 @@ genera_fila(Pistes_fila, N, Fila):- Pistes_fila \=[],
     								repartir(Buits_extra, GapsLen, Gaps),    								
     								juntar_fila_espais(Gaps,Pistes_fila, Fila).
 
+
+%-----------------'repartir'-----------------------------------------------------
+% Descripció:
+%   Reparteix un nombre enter (Total) en una llista de N valors enters no negatius
+%   tal que la suma dels elements sigui igual a Total.
+%
+% Arguments:
+%   - Total: Valor total que es vol repartir.
+%   - N: Nombre d'elements en què es vol repartir el total.
+%   - L: Llista resultant amb N enters que sumen Total.
+%
+% Cas base:
+%  
+%   - Si el total és 0, es genera una llista de N zeros.
+%
+%   - Si només queda una posició (N = 1), tota la quantitat restant es posa en aquesta posició.
+%
+% Cas recursiu:
+%       Es tria un valor X entre 0 i Total.
+%       Es resta X del total, i es continua el procés amb N-1 elements.
+%       Es fa crida recursiva per omplir la resta de la llista Xs.
+%----------------------------------------------------------------------------------------
 repartir(0, N, L) :- !, genera_array(N, 0, L).
 %només queda un buit
 repartir(Total, 1, [Total]):-!.
@@ -374,16 +398,51 @@ repartir(Total, N, [X|Xs]) :-
     N1 is N - 1,
     repartir(Rest, N1, Xs).
 
-
+%-----------------'juntar_fila_espais'--------------------------------------------
+% Descripció:
+%   Construeix una fila  a partir de les pistes d’un nonograma i una llista 
+%   de buits (espais en blanc) entre blocs. Els buits representen els espais abans, 
+%   entre i després dels blocs d'uns (1).
+%
+% Arguments:
+%   - Gaps: Llista d'enters que representen la quantitat de zeros abans, entre i després dels blocs.
+%   - Pistes: Llista d'enters que representen la longitud dels blocs d'uns.
+%   - Fila: Fila resultant. 
+%
+% Cas base:
+%      Crida inicial que passa una llista acumuladora buida al predicat auxiliar.
+%
+%----------------------------------------------------------------------------------------
 juntar_fila_espais(Gaps, Pistes, Fila) :-
     juntar_acc(Gaps, Pistes, [], Fila).
 
-% caso base: ya no quedan bloques, solo el hueco final
+%-----------------'juntar_acc'-----------------------------------------------------
+% Descripció:
+%   Predicat auxiliar que construeix la fila acumulant parts pas a pas:
+%   buits (zeros) i blocs (uns), separats per zeros si cal.
+%
+% Arguments:
+%   - [G]: Llista de buits restants.
+%   - [Pista]: Llista de longituds de blocs restants.
+%   - Acc: Acumulador parcial de la fila.
+%   - Fila: Fila completa generada com a resultat final.
+%
+% Cas base:
+%   - Si no queden més blocs, només s'afegeix el darrer espai final.
+%
+% Cas recursiu:
+%   - Afegeix un bloc de zeros (espai abans del bloc).
+%   - Afegeix un bloc de uns (bloc definit per la pista).
+%   - Si queden més pistes, afegeix un zero separador.
+%   - Continua recursivament amb la resta de buits i pistes.
+%----------------------------------------------------------------------------------------
+
+juntar_acc([], [], Fila, Fila).
+
 juntar_acc([G], [], Acc, Fila) :-
     genera_array(G, 0, Zs),
     afegir(Acc, Zs, Fila).
 
-% caso recursivo: pongo hueco extra, bloque de unos, 0 separador si vienen más bloques
 juntar_acc([Buit|Buits], [Pista|Pistes_fila], Acumulador, Fila) :-
     genera_array(Buit, 0, Zeros),
     afegir(Acumulador, Zeros, Acc1),
@@ -392,8 +451,22 @@ juntar_acc([Buit|Buits], [Pista|Pistes_fila], Acumulador, Fila) :-
     afegir_zero(Pistes_fila, Acc2, Acc3),
     juntar_acc(Buits, Pistes_fila, Acc3, Fila).
 
-juntar_acc([], [], Fila, Fila).
-
+%-----------------'afegir_zero'----------------------------------------------------
+% Descripció:
+%   Afegeix un zero separador entre blocs d’un nonograma només si encara queden
+%   més pistes per afegir. En cas contrari, deixa el llistat acumulador igual.
+%
+% Arguments:
+%   - Pistes: Llista de pistes restants 
+%   - Acumulador: Llista parcial construïda fins ara.
+%   - Acc: Llista resultant després d’afegir (o no) un zero.
+%
+% Cas base:
+%   - Si no queden més pistes (cap més bloc a afegir), no cal cap zero separador.
+%
+% Cas recursiu:
+%   - Si hi ha més pistes per afegir, s’afegeix un zero com a separador entre blocs.
+%------------------------------------------------------------------------------------
 afegir_zero([], Acumulador, Acumulador).
 afegir_zero([_|_], Acumulador, Acc) :-
     afegir(Acumulador, [0], Acc).
