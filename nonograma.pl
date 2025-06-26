@@ -651,11 +651,191 @@ genera_binari(N, [Bit|Resta]) :-
     N1 is N - 1,
     genera_binari(N1, Resta).
 
+%-----------------'imprimir_nonograma'--------------------------------------------------------
+% Descripció:
+%   Imprimeix per consola un nonograma amb les seves pistes
+%
+% Arguments:
+%   - Files: les pistes de la fila
+%   - Columnes: les pistes de les columnes
+%   - Nonograma: la matriu del nonograma
+%
+% Cas base:
+%   - Si no hi ha res més per a imprimir
+%
+% Cas recursiu:
+%   - Primer imprimeix les pistes de les columnes, tenint en compte l'espai que hi haurá per
+%    a les files. Després imprimeix les pistes de les files amb la fila del nonograma corresponent
+%--------------------------------------------------------------------------------------------------
+imprimir_nonograma([],[],[]).
+imprimir_nonograma(Files, Columnes, Nonograma) :-
+    max_length(Files, LF),
+    Pad is LF * 2 + 1,
+    imprimir_columnes(Pad, Columnes),
+    imprimir_files(Files, Nonograma, Pad).
 
+%-----------------'imprimir_files'--------------------------------------------------------
+% Descripció:
+%   Imprimeix per consola una fila del nongrama amb la seva pista
+%
+% Arguments:
+%   - Files: les pistes de la fila
+%   - Nonograma: la matriu del nonograma
+%   - MaxTamany, el tamany màxim d'una pista
+%
+% Cas base:
+%   - Si no hi ha res més per a imprimir.
+%
+% Cas recursiu:
+%   - Primer imprimeix la pista, després imprimeix espais fins a MaxTamany, després pinta 
+%    la fila del nonograma.
+%--------------------------------------------------------------------------------------------------
+imprimir_files([],[], _):-!.
+imprimir_files([Fila | Files], [N | Nonograma], MaxTamany):-
+    length(Fila, LF),
+    imprimir_fila_intern(Fila),
+    R is MaxTamany - (LF * 2),
+    printr(R, ' '),
+    %format("|"),
+    imprimir_nonograma_intern(N),
+    nl,
+    imprimir_files(Files, Nonograma, MaxTamany).
 
+%-----------------'imprimir_nonograma_intern'--------------------------------------------------------
+% Descripció:
+%   Imprimeix per consola una fila del nongrama
+%
+% Arguments:
+%   - Nonograma: la fila del nonograma
+%
+% Cas base:
+%   - Si no hi ha res més per a imprimir.
+%
+% Cas recursiu:
+%   - Imprimeix "| " si és 0
+%   - Imprimeix "|█" si és 1
+%--------------------------------------------------------------------------------------------------
+imprimir_nonograma_intern([]):- format("|"), !.
+imprimir_nonograma_intern([0 | Nonograma]):-
+    format("| "),
+    imprimir_nonograma_intern(Nonograma).
+imprimir_nonograma_intern([1 | Nonograma]):-
+    format("|█"),
+    imprimir_nonograma_intern(Nonograma).
 
+%-----------------'imprimir_fila_intern'--------------------------------------------------------
+% Descripció:
+%   Imprimeix per consola una fila de la pista
+%
+% Arguments:
+%   - Fila: la fila de les pistes
+%
+% Cas base:
+%   - Si no hi ha res més per a imprimir.
+%
+% Cas recursiu:
+%   - Imprimeix l'element de la pista
+%--------------------------------------------------------------------------------------------------
+imprimir_fila_intern([]):- !.
+imprimir_fila_intern([X| Fila]):- format("~w ", [X]), imprimir_fila_intern(Fila).
 
+%-----------------'imprimir_columnes'----------------------------------------------------
+% Descripció:
+%   Imprimeix per consola les pistes de les columnes d'un nonograma, línia a línia.
+%
+% Arguments:
+%   - Padding: nombre d'espais a imprimir abans de les pistes de columna (per alineació).
+%   - Columnes: llista de llistes amb les pistes de cada columna.
+%
+% Cas base:
+%   - Si no hi ha res més per a imprimir.
+%
+% Cas recursiu:
+%   - Si encara queden valors per imprimir, imprimeix el padding, després la línia de pistes
+%     de les columnes.
+%----------------------------------------------------------------------------------------
+imprimir_columnes(_, []).
+imprimir_columnes(Padding, Columnes):-
+    not(tot_buit(Columnes)),!, printr(Padding, ' '),
+    imprimir_columnes_intern(Columnes, RestColumnes),
+    nl,
+    imprimir_columnes(Padding, RestColumnes).
+imprimir_columnes(Padding, Columnes):- !.
 
+%-----------------'imprimir_columnes_intern'---------------------------------------------
+% Descripció:
+%   Per cada columna, imprimeix el primer element o un espai si la columna està buida.
+%
+% Arguments:
+%   - Columnes: Pistes de les columnes
+%   - RestColumnes: Les pistes mens el primer element
+%
+% Cas base:
+%   - Si no hi ha res més per a imprimir. imprimeix "|".
+%
+% Cas recursiu:
+%   - Si la columna actual està buida, imprimeix "| " i continua amb la resta.
+%   - Si la columna actual té valors, imprimeix "|<valor>" i continua amb la resta.
+%----------------------------------------------------------------------------------------
+imprimir_columnes_intern([],[]) :- format("|"), !.
+imprimir_columnes_intern([[]|Columnes], [[] | RestColumnes]) :- 
+    format("| "),
+    imprimir_columnes_intern(Columnes, RestColumnes).
+imprimir_columnes_intern([[X|Rest]|Columnes], [Rest|RestColumnes]) :- 
+    format("|~w", [X]), 
+    imprimir_columnes_intern(Columnes, RestColumnes).
+
+%-----------------'tot_buit'------------------------------------------------------------
+% Descripció:
+%   Comprova si totes les subllistes d'una llista són buides.
+%
+% Arguments:
+%   - L: llista de llistes a comprovar.
+%
+% Cas base:
+%   - Si la llista és buida, retorna true.
+%
+% Cas recursiu:
+%   - Si algun element no és una llista buida, retorna fals.
+%   - Si no, continua comprovant.
+%----------------------------------------------------------------------------------------
+tot_buit([]).
+tot_buit([[]|X]):- tot_buit(X).
+tot_buit([_|X]):-fail, !.
+
+%-----------------'printr'--------------------------------------------------------------
+% Descripció:
+%   Imprimeix un element N vegades.
+%
+% Arguments:
+%   - N: nombre de vegades.
+%   - C: El caràcter.
+%
+% Cas base:
+%   - Si N és 0.
+%
+% Cas recursiu:
+%   - Imprimeix el caràcter i decreix N.
+%----------------------------------------------------------------------------------------
+printr(0, _):-!.
+printr(N, C):- N > 0, format(C), N1 is N - 1, printr(N1, C).
+
+%-----------------'max_length'----------------------------------------------------------
+% Descripció:
+%   Calcula la longitud màxima entre totes les subllistes d'una llista.
+%
+% Arguments:
+%   - L: llista.
+%   - Max: longitud màxima.
+%
+% Cas base:
+%   - Si la llista és buida, la longitud màxima és 0.
+%
+% Cas recursiu:
+%   - Calcula la longitud de la primera subllista i la compara amb la màxima de la resta.
+%----------------------------------------------------------------------------------------
+max_length([], 0).
+max_length([E| Elems], Max):- length(E, EVal), max_length(Elems, Val), Max is max(EVal, Val).
 
 
 
