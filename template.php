@@ -8,51 +8,77 @@
     <link rel="stylesheet" href="style/main.css">
 </head>
 
+<?php
+// Cargar idioma seleccionado o por defecto 'es'
+$idioma = $_GET['lang'] ?? $_COOKIE['lang'] ?? 'es';
+setcookie('lang', $idioma, time() + 3600 * 24 * 30, '/'); // Guardar preferencia
+
+// Cargar traducciones desde archivo externo
+$traducciones = [];
+if (file_exists("lang/$idioma.php")) {
+    include "lang/$idioma.php";
+} else {
+    include "lang/es.php";
+}
+function t($clave) {
+    global $traducciones;
+    return $traducciones[$clave] ?? $clave;
+}
+
+// Detectar idiomas disponibles automáticamente
+$idiomas_disponibles = [];
+foreach (glob(__DIR__ . '/lang/*.php') as $file) {
+    $code = basename($file, '.php');
+    $idiomas_disponibles[] = $code;
+}
+?>
+
 <header>
+    <?php foreach ($idiomas_disponibles as $lang): ?>
+        <button onclick="window.location.search='?lang=<?= $lang ?>'"<?= $idioma === $lang ? ' style="font-weight:bold"' : '' ?>><?= strtoupper($lang) ?></button>
+    <?php endforeach; ?>
     <a href="https://github.com/Ti-trit/nonograms-PROLOG" target="_blank"><img src="assets/icon/github.svg" width="45" height="45"></img></a>
 </header>
-<h1>Nonograma</h1>
+<h1><?= t('Nonograma') ?></h1>
 <div class="container">
     <div>
 
         <form method="post" id="form">
             <div class="numbers">
                 <div class="ro-cols">
-                    <label>Filas <input type="number" name="rows" value="<?= $rows ?>"></label>
+                    <label><?= t('Filas') ?> <input type="number" name="rows" value="<?= $rows ?>"></label>
                 </div>
                 <div class="ro-cols">
-                    <label>Columnas <input type="number" name="cols" value="<?= $cols ?>"></label>
+                    <label><?= t('Columnas') ?> <input type="number" name="cols" value="<?= $cols ?>"></label>
                 </div>
             </div>
             <div class="buttons">
-                <button type="submit" name="action" value="check">Comprobar</button>
-                <button type="submit" name="action" value="solve">Resolver</button>
-                <button type="submit" name="action" value="gen">Generar</button>
+                <button type="submit" name="action" value="check"><?= t('Comprobar') ?></button>
+                <button type="submit" name="action" value="solve"><?= t('Resolver') ?></button>
+                <button type="submit" name="action" value="gen"><?= t('Generar') ?></button>
             </div>
             <div class="wrapper">
     
                 <div class="ro-cols rows">
-                    <label>Pistas Filas <input type="text" name="pistasF" value='<?= htmlspecialchars($pistasF, ENT_QUOTES) ?>'></label>
+                    <label><?= t('Pistas Filas') ?> <input type="text" name="pistasF" value='<?= htmlspecialchars($pistasF, ENT_QUOTES) ?>'></label>
                 </div>
                 <div class="ro-cols cols">
-                    <label>Pistas Columnas <input type="text" name="pistasC" value='<?= htmlspecialchars($pistasC, ENT_QUOTES) ?>'></label>
+                    <label><?= t('Pistas Columnas') ?> <input type="text" name="pistasC" value='<?= htmlspecialchars($pistasC, ENT_QUOTES) ?>'></label>
                 </div>
             </div>
             <input type="hidden" name="casillas" id="casillas" value='<?= htmlspecialchars($casillas, ENT_QUOTES) ?>'>
     
             <div id="grid" class="grid" style="grid-template-columns: repeat(<?= $cols ?>, 30px);"></div>
         </form>
-        <pre>Resultado: <?php print_r($sol); ?></pre>
+        <pre><?= t('Resultado') ?>: <?php print_r($sol); ?></pre>
         
     </div>
     <section>
         <div>
-            <p> <span>Generar</span> --> genera un nonograma a partir del número de filas y columnas introducidas
-            </p>
-            <p> <span>Comprobar</span> --> comprubea un nonograma resuleto.
-            <p><span>Resolver</span> --> resuelve el nonograma dadas las pistas de filas y columna
-            </p>
-
+            <p> <span><?= t('Generar') ?></span> --> <?= t('Generar_desc') ?> </p>
+            <p> <span><?= t('Comprobar') ?></span> --> <?= t('Comprobar_desc') ?></p>
+            <p> <span><?= t('Resolver') ?></span> --> <?= t('Resolver_desc') ?> </p>
+            <p> <span><?= t('Autores') ?></span> --> Khaoula Ikkene, Daniel García Vázquez</p>
         </div>
     </section>
 </div>

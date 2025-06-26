@@ -70,6 +70,10 @@ section {
             color: #c2a1c3;
             background: #8a3866;
         }
+        p:nth-child(4) {
+            color: #e4e3e3;
+            background: #7a7a7a;
+        }
     }
 
     span {
