@@ -24,12 +24,20 @@ function t($clave) {
     global $traducciones;
     return $traducciones[$clave] ?? $clave;
 }
+
+// Detectar idiomas disponibles automáticamente
+$idiomas_disponibles = [];
+foreach (glob(__DIR__ . '/lang/*.php') as $file) {
+    $code = basename($file, '.php');
+    $idiomas_disponibles[] = $code;
+}
 ?>
 
 <header>
+    <?php foreach ($idiomas_disponibles as $lang): ?>
+        <button onclick="window.location.search='?lang=<?= $lang ?>'"<?= $idioma === $lang ? ' style="font-weight:bold"' : '' ?>><?= strtoupper($lang) ?></button>
+    <?php endforeach; ?>
     <a href="https://github.com/Ti-trit/nonograms-PROLOG" target="_blank"><img src="assets/icon/github.svg" width="45" height="45"></img></a>
-    <button onclick="window.location.search='?lang=es'">ES</button>
-    <button onclick="window.location.search='?lang=ca'">CA</button>
 </header>
 <h1><?= t('Nonograma') ?></h1>
 <div class="container">
@@ -62,15 +70,15 @@ function t($clave) {
     
             <div id="grid" class="grid" style="grid-template-columns: repeat(<?= $cols ?>, 30px);"></div>
         </form>
-        <pre>Resultado: <?php print_r($sol); ?></pre>
+        <pre><?= t('Resultado') ?>: <?php print_r($sol); ?></pre>
         
     </div>
     <section>
         <div>
-            <p> <span>Generar</span> --> genera un nonograma a partir del número de filas y columnas introducidas
+            <p> <span><?= t('Generar') ?></span> --> <?= t('Generar_desc') ?>
             </p>
-            <p> <span>Comprobar</span> --> comprubea un nonograma resuleto.
-            <p><span>Resolver</span> --> resuelve el nonograma dadas las pistas de filas y columna
+            <p> <span><?= t('Comprobar') ?></span> --> <?= t('Comprobar_desc') ?>
+            <p><span><?= t('Resolver') ?></span> --> <?= t('Resolver_desc') ?>
             </p>
 
         </div>
