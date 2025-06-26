@@ -12,5 +12,6 @@ $traducciones = [
     'Generar_desc' => 'Genera un nonograma a partir del número de filas y columnas introducidas.',
     'Comprobar_desc' => 'Comprueba un nonograma resuelto.',
     'Resolver_desc' => 'Resuelve el nonograma dadas las pistas de filas y columna.',
+    'Autores' => 'Autores',
 ];
 ?>

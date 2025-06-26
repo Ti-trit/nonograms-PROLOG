@@ -75,12 +75,10 @@ foreach (glob(__DIR__ . '/lang/*.php') as $file) {
     </div>
     <section>
         <div>
-            <p> <span><?= t('Generar') ?></span> --> <?= t('Generar_desc') ?>
-            </p>
-            <p> <span><?= t('Comprobar') ?></span> --> <?= t('Comprobar_desc') ?>
-            <p><span><?= t('Resolver') ?></span> --> <?= t('Resolver_desc') ?>
-            </p>
-
+            <p> <span><?= t('Generar') ?></span> --> <?= t('Generar_desc') ?> </p>
+            <p> <span><?= t('Comprobar') ?></span> --> <?= t('Comprobar_desc') ?></p>
+            <p> <span><?= t('Resolver') ?></span> --> <?= t('Resolver_desc') ?> </p>
+            <p> <span><?= t('Autores') ?></span> --> Khaoula Ikkene, Daniel García Vázquez</p>
         </div>
     </section>
 </div>

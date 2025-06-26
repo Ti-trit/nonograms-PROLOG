@@ -12,6 +12,8 @@
 %       - Genereció de nonograms 
 %       - S'ha afegit la part del frontend del joc utilitzant PHP i HTML,
 %           encarregant-se de la representació visual del joc
+% AFEGITS: S'ha afegit un predicat per imprimir un nonograma amb les seves pistes:
+% imprimir_nonograma i auxiliars
 % CANVIS FETS: Ara la generació de la fila es basa en repartir de manera explícita
 % els buits extra disponibles abans, entre i després dels blocs, en comptes de fer-ho
 % amb una distribució aleatòria no estructurada.
